@@ -38,7 +38,7 @@
 | 注册的机制 | 效果 |
 |---|---|
 | `FltRegisterFilter`（**文件系统微过滤器**） | 保护自己的安装目录，`Remove-Item` 可能报 `Access denied` |
-| `CmRegisterCallback`（**注册表回调**） | **把服务 `Start` 改回 `auto`** —— 这就是"禁用后几秒自己变回来"的原因 |
+| `CmRegisterCallback`（**注册表回调**） | **"禁用后几秒 `Start` 自己变回 `auto`"的机制与该能力一致**（回滚动作与驱动注册的注册表回调相符，属推断；执行者未被逐一追踪，也可能是用户态进程轮询回写） |
 | `PsSetCreateProcessNotifyRoutine`（**进程回调**） | 守护 `AlibabaProtect.exe` 本体 |
 
 此外它还带 `RestartService.exe`（自我重启）、`AntiDebug.dll` / `AntiInject.dll`（反调试/反注入）。
@@ -79,7 +79,7 @@ Get-ScheduledTask | Where-Object { $_.TaskName -match 'Ali' } | Select-Object Ta
 |---|---|---|
 | **客户端重装** | 阿里系客户端（旺旺/淘宝/优酷/1688 等）启动或更新时会检查并重新安装 | 见**第六节「防复发」** |
 | **SCM 自动恢复** | 服务崩溃后，**服务控制管理器的恢复策略会在 60 秒后自动重启它**（系统日志事件 ID `7031`；注册表 `FailureActions` 里也写着同一策略：**3 次、每次 60000 毫秒**） | 删除服务（**而非仅禁用**）即可断掉 |
-| **配置被回滚** | 常驻驱动监控自己的注册表配置并改回 —— `Start` 改成 `Disabled` 后几秒自己变回 `Auto` | 只能靠**删服务** + **重启**，改配置没用 |
+| **配置被回滚** | `Start` 改成 `Disabled` 后几秒自己变回 `Auto`（实测观察）；机制与配套驱动注册的注册表回调能力**相符（推断，未追踪执行者）** | 只能靠**删服务** + **重启**，改配置没用 |
 
 > **三者独立**：删掉客户端不等于删掉服务；删掉服务才断掉 SCM 的自动恢复；而"改配置"这条路本身就走不通。
 
@@ -103,7 +103,7 @@ foreach ($t in @('AliProctectUpdate','AliUpdater')) {
 >
 > 顺带提醒：计划任务名与**进程名**不同 —— 进程叫 `AliProtectUpdate.exe`（拼写正确）。两者别混。
 
-### 阶段 B：删除服务（这一步会顺带停掉它的进程）
+### 阶段 B：删除服务（断掉 SCM 自动恢复；进程由阶段 C 结束）
 
 ```cmd
 sc.exe stop AlibabaProtect
@@ -111,6 +111,8 @@ sc.exe delete AlibabaProtect
 ```
 
 > 预期：`stop` 可能返回 **1052（请求的控件对此服务无效）**——这是正常的，该服务没有实现停止逻辑。**`delete` 应当成功**（`[SC] DeleteService 成功`）。
+>
+> ⚠️ **`delete` 只是标记删除，不会终止正在运行的进程**——服务注册项删除后，SCM 不会再把它拉起来，但进程本体可能仍在运行，由下一阶段（阶段 C）显式结束。
 
 ### 阶段 C：结束残留进程
 
@@ -249,6 +251,11 @@ A：执行第五节的五项验证清单。全绿即为完成。
 - 请勿将本文用于他人设备或任何未经授权的场景。
 - 文中命令基于作者在实机上的验证记录整理；不同版本的文件路径/版本号可能不同，执行前请先用第二节的只读命令核对你自己的实际情况。
 
+## AI 使用声明 / AI Usage Statement
+
+- **中文**：本指南的调研、取证与撰写**深度参与使用了 AI 工具**（命令整理与文本组织）。全部**清理决策与最终验收由人类作者作出**；所有命令与结论均在作者本人设备上实测通过后发布。
+- **English**: AI tools were **substantially involved** in drafting this guide (command organization and text). All **cleanup decisions and final acceptance were made by the human author**; every command and conclusion was verified on the author's own machine before publication.
+
 ## License
 
 本文档以 **[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)** 发布。
@@ -259,12 +266,14 @@ A：执行第五节的五项验证清单。全绿即为完成。
 
 A hands-on guide to removing **AlibabaProtect (`Alibaba PC Safe Service`)** from Windows, for users who have already uninstalled the client that shipped it and no longer need the component.
 
-**Why normal removal fails:** its companion kernel driver `AliPaladinEx64.sys` registers a **file-system minifilter** (`FltRegisterFilter`) to protect its install directory, a **registry callback** (`CmRegisterCallback`) that reverts its service start type back to *auto*, and a **process-creation callback** (`PsSetCreateProcessNotifyRoutine`) guarding the main process.
+**Why normal removal fails:** its companion kernel driver `AliPaladinEx64.sys` registers a **file-system minifilter** (`FltRegisterFilter`) to protect its install directory, a **registry callback** (`CmRegisterCallback`) consistent with the observed "start type reverts to *auto* seconds after being disabled" behavior (mechanism inference — the reverting agent was not traced), and a **process-creation callback** (`PsSetCreateProcessNotifyRoutine`) guarding the main process.
 
-**Approach:** disable the updater scheduled tasks → `sc delete` the service (which stops it) → kill any remaining process → `sc delete` the driver service → delete files → **reboot** → verify with a 5-item checklist (plus a 6th *informational* check that flags the expected IFEO entries if you applied the anti-recurrence step). Reboot is required so the driver unloads.
+**Approach:** disable the updater scheduled tasks → `sc delete` the service (this cuts off SCM recovery; the running process is killed explicitly next) → kill any remaining process → `sc delete` the driver service → delete files → **reboot** → verify with a 5-item checklist (plus a 6th *informational* check that flags the expected IFEO entries if you applied the anti-recurrence step). Reboot is required so the driver unloads.
 
 **Recurrence:** it can be reinstalled by Alibaba-family clients on launch/update, and the Service Control Manager's recovery policy restarts the service 60 s after a crash (event `7031`). The [forensics repo](https://github.com/deserthouse/alibabaprotect-forensics) documents a mechanism that blocks reinstallation without modifying any client file — and, importantly, how to **prove** it works.
 
 > Note on scheduled task names: the task is literally named `AliProctectUpdate` (the vendor's own typo), while the *process* is `AliProtectUpdate.exe`. Don't "fix" the spelling or the command will miss.
 
 This document is **documentation only** — no binaries, no releases.
+
+**Disclaimer (English):** This guide is intended **only for use on your own devices, by you, with administrator privileges**, to remove software you have decided you do not need. The author is not affiliated with any vendor mentioned. The operations require admin rights and modify system services, drivers, and the registry — **create a restore point first and understand each step**. Do not use this on other people's devices or in any unauthorized context. Published under CC BY 4.0, without warranty of any kind.
