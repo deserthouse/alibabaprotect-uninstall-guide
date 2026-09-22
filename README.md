@@ -3,34 +3,17 @@
 **Windows 上清理 AlibabaProtect（`Alibaba PC Safe Service`）的实测指南**
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-0078D4.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![English summary](https://img.shields.io/badge/README-English_summary-0078D4.svg)](#english-summary)
 
-原理与证据 → [alibabaprotect-forensics](https://github.com/deserthouse/alibabaprotect-forensics)
+[English summary](#english-summary) · 原理与证据 → [alibabaprotect-forensics](https://github.com/deserthouse/alibabaprotect-forensics)
 
 ---
 
 ## 先说结论：这是什么、能不能删
 
-- 你在任务管理器里看到的 `AlibabaProtect.exe`（服务名 `Alibaba PC Safe Service`），是阿里系软件（淘宝 / 旺旺 / 优酷 / UC / 1688 等）安装时**附带装入**的后台服务，属于阿里自带组件，不是病毒。
-- **卸载那些阿里系软件后，它不会跟着卸载**，仍会在后台常驻运行并消耗 CPU。
-- 如果你不依赖任何阿里系软件的功能，它可以安全删除；下面每一步都给出**预期输出**，照着核对即可。
-- 暂时不想动系统？先做[第二节只读检查](#二先做只读检查不改动任何东西)，不改动任何东西，看完再决定。
+- 你在任务管理器里看到的 `AlibabaProtect.exe`，是阿里系软件（淘宝 / 旺旺 / 优酷 / UC / 1688 等）安装时**附带装入**的后台服务（技术身份见第一节），不是病毒。
+- **卸载那些阿里系软件后，它不会跟着卸载**，仍在后台常驻并消耗 CPU。
+- 不依赖任何阿里系软件的功能，就可以安全删除；下面每一步都给出**预期输出**，照着核对即可。反之，如果你正在使用依赖它的功能、或还不确定是否需要它——**不要删**，先看第二节。
 - 看不懂命令行？把这份指南的链接交给你的 AI 助手，让它按文档逐步讲解或代你执行——每一步都有预期输出，照单核对即可。
-
----
-
-## 这份指南适用于谁
-
-✅ **适用于**：
-
-- 你已经卸载了装它的客户端（如阿里旺旺 / 淘宝 / 优酷 / UC / 钉钉 / 1688 等），但它**仍然在后台运行**
-- 你在任务管理器里看到 `AlibabaProtect.exe`，且占用可观的 CPU / 内存
-- 你自己判断**不需要**这个组件的功能
-
-❌ **不适用于**：
-
-- 你正在使用依赖它的功能
-- 你不确定它是什么、也不确定是否需要它
 
 > 本指南描述的是**在你自己的设备上**、由**你本人以管理员权限**执行的清理步骤。请先读完一遍再动手。
 
@@ -233,7 +216,7 @@ python ifeo_block.py --remove     # 一键还原
 ## 八、常见问题（FAQ）
 
 **Q：`sc.exe stop` 报 1052 怎么办？**
-A：正常，该服务未实现停止逻辑。直接执行 `sc.exe delete` 即可。
+A：正常（该服务未实现停止逻辑），预期行为见第四节阶段 B。
 
 **Q：`sc.exe delete` 之后服务还在 `services.msc` 里？**
 A：删除标记需要重启后才完全生效。重启即可。
