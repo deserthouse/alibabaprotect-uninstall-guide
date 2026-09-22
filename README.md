@@ -13,6 +13,7 @@
 - **卸载那些阿里系软件后，它不会跟着卸载**，仍会在后台常驻运行并消耗 CPU。
 - 如果你不依赖任何阿里系软件的功能，它可以安全删除；下面每一步都给出**预期输出**，照着核对即可。
 - 暂时不想动系统？先做[第二节只读检查](#二先做只读检查不改动任何东西)，不改动任何东西，看完再决定。
+- 看不懂命令行？把这份指南的链接交给你的 AI 助手，让它按文档逐步讲解或代你执行——每一步都有预期输出，照单核对即可。
 
 ---
 
@@ -295,6 +296,8 @@ A hands-on guide to removing **AlibabaProtect (`Alibaba PC Safe Service`)** from
 **Recurrence:** it can be reinstalled by Alibaba-family clients on launch/update, and the Service Control Manager's recovery policy restarts the service 60 s after a crash (event `7031`). The [forensics repo](https://github.com/deserthouse/alibabaprotect-forensics) documents a mechanism that blocks reinstallation without modifying any client file — and, importantly, how to **prove** it works.
 
 > Note on scheduled task names: the task is literally named `AliProctectUpdate` (the vendor's own typo), while the *process* is `AliProtectUpdate.exe`. Don't "fix" the spelling or the command will miss.
+
+If the command line is unfamiliar, hand this guide's link to your AI assistant and have it walk you through — or execute for you; every step carries expected output to verify against.
 
 This document is **documentation only** — no binaries, no releases.
 
