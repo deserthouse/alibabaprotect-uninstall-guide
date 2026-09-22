@@ -249,6 +249,7 @@ A：执行第五节的五项验证清单。全绿即为完成。
 - 作者与文中提及的任何厂商均无关联。
 - 操作**需要管理员权限**，且包含对系统服务、驱动与注册表的修改。**请在操作前创建系统还原点，并自行确认每一步的含义。**
 - 请勿将本文用于他人设备或任何未经授权的场景。
+- 本指南为纯文档，**不包含任何厂商软件的二进制或本体资源**；文中引用的日志/报错原文仅为说明所需的少量引用，全文为作者原创内容。
 - 文中命令基于作者在实机上的验证记录整理；不同版本的文件路径/版本号可能不同，执行前请先用第二节的只读命令核对你自己的实际情况。
 
 ## AI 使用声明 / AI Usage Statement
@@ -276,4 +277,4 @@ A hands-on guide to removing **AlibabaProtect (`Alibaba PC Safe Service`)** from
 
 This document is **documentation only** — no binaries, no releases.
 
-**Disclaimer (English):** This guide is intended **only for use on your own devices, by you, with administrator privileges**, to remove software you have decided you do not need. The author is not affiliated with any vendor mentioned. The operations require admin rights and modify system services, drivers, and the registry — **create a restore point first and understand each step**. Do not use this on other people's devices or in any unauthorized context. Published under CC BY 4.0, without warranty of any kind.
+**Disclaimer (English):** This guide is intended **only for use on your own devices, by you, with administrator privileges**, to remove software you have decided you do not need. The author is not affiliated with any vendor mentioned. The operations require admin rights and modify system services, drivers, and the registry — **create a restore point first and understand each step**. Do not use this on other people's devices or in any unauthorized context. This guide is original text and contains **no vendor binaries or original resources**; quoted log/error lines are minimal excerpts for explanation only. Published under CC BY 4.0, without warranty of any kind.
