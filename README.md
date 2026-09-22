@@ -3,7 +3,9 @@
 **Windows 上清理 AlibabaProtect（`Alibaba PC Safe Service`）的实测指南**
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-0078D4.svg)](https://creativecommons.org/licenses/by/4.0/)
-[English summary below](#english-summary) · 原理与证据见 → [alibabaprotect-forensics](https://github.com/deserthouse/alibabaprotect-forensics)
+[![English summary](https://img.shields.io/badge/README-English_summary-0078D4.svg)](#english-summary)
+
+原理与证据 → [alibabaprotect-forensics](https://github.com/deserthouse/alibabaprotect-forensics)
 
 ---
 
