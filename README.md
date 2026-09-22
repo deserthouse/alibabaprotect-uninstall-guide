@@ -19,7 +19,7 @@ for non-Chinese users: [English summary](#english-summary) · Principles & evide
 
 ---
 
-## 一、它是什么（客观描述）
+## 一、它是什么
 
 | 项目 | 值 |
 |---|---|
