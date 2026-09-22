@@ -39,7 +39,7 @@ for non-Chinese users: [English summary](#english-summary) · Principles & evide
 
 此外它还带 `RestartService.exe`（自我重启）、`AntiDebug.dll` / `AntiInject.dll`（反调试/反注入）。
 
-> 完整的行为分析（枚举 API、上报通道、内嵌 SQLite、构建路径等）见考证仓。
+> 完整的行为分析（枚举 API、上报通道、内嵌 SQLite、构建路径等）见取证仓。
 
 ---
 
@@ -167,9 +167,9 @@ Remove-Item 'C:\ProgramData\Alibaba\AlibabaProtectDT' -Recurse -Force
 
 > ⚠️ **第 6 项不要当残留删掉。** 如果你按第六节设置了 IFEO 拦截，`AlibabaProtect.exe` 等 **4 个**映像名在 `Image File Execution Options` 下**必然存在**键值 —— 那是**预期状态**，不是"没删干净"。删掉它等于关掉防复发。
 >
-> 想确认它是否在工作，用**功能验证**而不是看注册表：见 [考证仓的执行级取证章节](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/05-execution-forensics.md)。
+> 想确认它是否在工作，用**功能验证**而不是看注册表：见 [取证仓的执行级取证章节](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/05-execution-forensics.md)。
 
-**自动化核验**：不想逐条敲命令的话，考证仓提供了只读的核验脚本（含上述 1–5 项，并额外检查驱动与残留目录）：
+**自动化核验**：不想逐条敲命令的话，取证仓提供了只读的核验脚本（含上述 1–5 项，并额外检查驱动与残留目录）：
 
 ```bash
 python verify_clean.py
@@ -183,7 +183,7 @@ python verify_clean.py
 
 原理简述：Windows 在创建进程时会按**映像文件名**查询 `Image File Execution Options` 注册表位置；把一个名称的 `Debugger` 指向**不存在的路径**，那么任何以该名称启动的进程都会在 `CreateProcess` 阶段失败——**谁调用都一样，按名字全局生效**。
 
-⇒ 完整原理、实测验证方法与局限，见考证仓：
+⇒ 完整原理、实测验证方法与局限，见取证仓：
 
 | 内容 | 链接 |
 |---|---|
@@ -191,7 +191,7 @@ python verify_clean.py
 | 怎么**证明**拦截真的生效（探针实验 / Prefetch 指纹） | [docs/05-execution-forensics.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/05-execution-forensics.md) |
 | 为什么删了还会回来（三条重新出现路径） | [docs/04-why-hard-to-remove.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/04-why-hard-to-remove.md) |
 
-**一键执行**（脚本在考证仓 [`scripts/`](https://github.com/deserthouse/alibabaprotect-forensics/tree/main/scripts)，下载到本地后运行；可逆）：
+**一键执行**（脚本在取证仓 [`scripts/`](https://github.com/deserthouse/alibabaprotect-forensics/tree/main/scripts)，下载到本地后运行；可逆）：
 
 ```bash
 python ifeo_block.py --status     # 查看状态（只读）
@@ -229,7 +229,7 @@ A：这**通常不是权限问题，而是安全软件（HIPS）的"注册表防
 
 快速确认：**普通 HKLM 键能写、IFEO 子键不能写** 即可锁定是它。
 
-处置：临时退出该安全软件 → 建立拦截 → **再把它开回来**（不要长期关闭）。详见[考证仓第 4.4 节](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/06-prevent-recurrence.md)。
+处置：临时退出该安全软件 → 建立拦截 → **再把它开回来**（不要长期关闭）。详见[取证仓第 4.4 节](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/06-prevent-recurrence.md)。
 
 **Q：`AliPaladin` 驱动删不掉文件？**
 A：驱动在线无法卸载。删除服务注册项 + 重启，之后文件即可删除。
@@ -243,10 +243,10 @@ A：执行第五节的五项验证清单。五项全部符合即为完成。
 
 本指南只提供文档和少量只读/可逆脚本，不提供"一键删除"工具，原因如下：
 
-1. **清理动作不可逆，且因版本而异**。它的安装路径带版本号（实测一台机器上三个版本目录并存）、驱动有 8 个变体、不同机器加载的文件名不同（详见[考证仓 01](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/01-what-it-is.md)）。按固定路径写死的一键工具在别的机器上会**漏删或误删**。
+1. **清理动作不可逆，且因版本而异**。它的安装路径带版本号（实测一台机器上三个版本目录并存）、驱动有 8 个变体、不同机器加载的文件名不同（详见[取证仓 01](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/01-what-it-is.md)）。按固定路径写死的一键工具在别的机器上会**漏删或误删**。
 2. **部分机器上会静默失败**。例如防复发步骤写入注册表的操作会被安全软件（HIPS）拦截（见第八节 FAQ），一键工具遇到拦截往往半途而废，反而留下"删不干净"的状态。
 3. **文档让每一步可见**。本指南的每个命令都附预期输出，出错的当场就能发现并停下；工具执行失败时使用者通常毫无察觉。
-4. 提供的边界：考证仓中的 `verify_clean.py`（只读核验）与 `ifeo_block.py`（可逆注册表脚本）**不含任何删除动作**，属于安全可逆的辅助；不可逆的删除操作一律由本指南文档承载、由使用者本人执行。
+4. 提供的边界：取证仓中的 `verify_clean.py`（只读核验）与 `ifeo_block.py`（可逆注册表脚本）**不含任何删除动作**，属于安全可逆的辅助；不可逆的删除操作一律由本指南文档承载、由使用者本人执行。
 
 ---
 
