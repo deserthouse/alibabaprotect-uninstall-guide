@@ -2,7 +2,17 @@
 
 **Windows 上清理 AlibabaProtect（`Alibaba PC Safe Service`）的实测指南**
 
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-0078D4.svg)](https://creativecommons.org/licenses/by/4.0/)
 [English summary below](#english-summary) · 原理与证据见 → [alibabaprotect-forensics](https://github.com/deserthouse/alibabaprotect-forensics)
+
+---
+
+## 先说结论：这是什么、能不能删
+
+- 你在任务管理器里看到的 `AlibabaProtect.exe`（服务名 `Alibaba PC Safe Service`），是阿里系软件（淘宝 / 旺旺 / 优酷 / UC / 1688 等）安装时**附带装入**的后台服务，属于阿里自带组件，不是病毒。
+- **卸载那些阿里系软件后，它不会跟着卸载**，仍会在后台常驻运行并消耗 CPU。
+- 如果你不依赖任何阿里系软件的功能，它可以安全删除；下面每一步都给出**预期输出**，照着核对即可。
+- 暂时不想动系统？先做[第二节只读检查](#二先做只读检查不改动任何东西)，不改动任何东西，看完再决定。
 
 ---
 
@@ -71,7 +81,7 @@ Get-ScheduledTask | Where-Object { $_.TaskName -match 'Ali' } | Select-Object Ta
 
 ---
 
-## 三、三条已知的「复活」路径
+## 三、三条已知的重新出现路径
 
 清理前请先知道它可能怎么回来：
 
@@ -193,7 +203,7 @@ python verify_clean.py
 |---|---|
 | 防复发：方案对比、IFEO 原理、**写入被安全软件拦截的排查** | [docs/06-prevent-recurrence.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/06-prevent-recurrence.md) |
 | 怎么**证明**拦截真的生效（探针实验 / Prefetch 指纹） | [docs/05-execution-forensics.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/05-execution-forensics.md) |
-| 为什么删了还会回来（三条"复活"路径） | [docs/04-why-hard-to-remove.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/04-why-hard-to-remove.md) |
+| 为什么删了还会回来（三条重新出现路径） | [docs/04-why-hard-to-remove.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/04-why-hard-to-remove.md) |
 
 **一键执行**（脚本在取证仓 [`scripts/`](https://github.com/deserthouse/alibabaprotect-forensics/tree/main/scripts)，下载到本地后运行；可逆）：
 
@@ -217,7 +227,7 @@ python ifeo_block.py --remove     # 一键还原
 
 ---
 
-## 八、常见问题
+## 八、常见问题（FAQ）
 
 **Q：`sc.exe stop` 报 1052 怎么办？**
 A：正常，该服务未实现停止逻辑。直接执行 `sc.exe delete` 即可。
@@ -239,7 +249,18 @@ A：这**通常不是权限问题，而是安全软件（HIPS）的"注册表防
 A：驱动在线无法卸载。删除服务注册项 + 重启，之后文件即可删除。
 
 **Q：清理后 Ctrl+F 搜不到任何残留，但还是担心？**
-A：执行第五节的五项验证清单。全绿即为完成。
+A：执行第五节的五项验证清单。五项全部符合即为完成。
+
+---
+
+## 九、为什么不提供一键清理工具
+
+本指南只提供文档和少量只读/可逆脚本，不提供"一键删除"工具，原因如下：
+
+1. **清理动作不可逆，且因版本而异**。它的安装路径带版本号（实测一台机器上三个版本目录并存）、驱动有 8 个变体、不同机器加载的文件名不同（详见[取证仓 01](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/01-what-it-is.md)）。按固定路径写死的一键工具在别的机器上会**漏删或误删**。
+2. **部分机器上会静默失败**。例如防复发步骤写入注册表的操作会被安全软件（HIPS）拦截（见第八节 FAQ），一键工具遇到拦截往往半途而废，反而留下"删不干净"的状态。
+3. **文档让每一步可见**。本指南的每个命令都附预期输出，出错的当场就能发现并停下；工具执行失败时使用者通常毫无察觉。
+4. 提供的边界：取证仓中的 `verify_clean.py`（只读核验）与 `ifeo_block.py`（可逆注册表脚本）**不含任何删除动作**，属于安全可逆的辅助；不可逆的删除操作一律由本指南文档承载、由使用者本人执行。
 
 ---
 
