@@ -4,7 +4,7 @@
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-0078D4.svg)](https://creativecommons.org/licenses/by/4.0/)
 
-[for non-Chinese users: English summary](#english-summary) · [Principles & evidence: alibabaprotect-forensics](https://github.com/deserthouse/alibabaprotect-forensics)
+for non-Chinese users: [English summary](#english-summary) · Principles & evidence: [alibabaprotect-forensics](https://github.com/deserthouse/alibabaprotect-forensics)
 
 ---
 
