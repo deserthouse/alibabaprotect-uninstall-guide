@@ -163,7 +163,7 @@ Remove-Item 'C:\ProgramData\Alibaba\AlibabaProtectDT' -Recurse -Force
 | 3 | `Test-Path 'C:\Program Files (x86)\AlibabaProtect'` | `False` |
 | 4 | `reg query "HKLM\SYSTEM\CurrentControlSet\Services\AlibabaProtect"` | 找不到项 |
 | 5 | `Get-ScheduledTask \| Where-Object { $_.TaskName -match 'Ali' }` | 无 AlibabaProtect 相关条目 |
-| 6 | `reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\AlibabaProtect.exe" /v Debugger` | **若你做了第六节的防复发设置，这里【应当有】条目** —— 见下方说明 |
+| 6 | `reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\AlibabaProtect.exe" /v Debugger` | **若你做了第六节的防复发设置，这里（应当有）条目** —— 见下方说明 |
 
 五项（1–5）全部符合 = 清理完成。
 
