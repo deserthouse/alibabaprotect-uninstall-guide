@@ -6,6 +6,12 @@
 
 for non-Chinese users: [English summary](#english-summary) · Principles & evidence: [alibabaprotect-forensics](https://github.com/deserthouse/alibabaprotect-forensics)
 
+> **声明**
+>
+> 本指南不含任何人类成分，详见 [AI 使用声明](#ai-使用声明--ai-usage-statement)；
+>
+> 本指南为独立技术分析，与阿里巴巴无关联，不提供一键清理工具（不可逆操作以文档承载、由人执行），详见 [免责声明](#免责声明)。
+
 ---
 
 ## 小白指南
@@ -272,6 +278,12 @@ A：执行第五节的五项验证清单。五项全部符合即为完成。
 ---
 
 ## English summary
+
+> **Statements**
+>
+> This guide contains no human ingredients — see the [AI usage statement](#ai-使用声明--ai-usage-statement).
+>
+> This is an independent technical analysis, not affiliated with Alibaba; no one-click cleanup tool is provided (irreversible operations are carried by documentation and executed by a human) — see the [Disclaimer](#免责声明).
 
 A hands-on guide to removing **AlibabaProtect (`Alibaba PC Safe Service`)** from Windows, for users who have already uninstalled the client that shipped it and no longer need the component.
 
