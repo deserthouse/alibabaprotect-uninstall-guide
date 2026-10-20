@@ -2,6 +2,9 @@
 
 **Windows 上清理 AlibabaProtect（`Alibaba PC Safe Service`）的实测指南**
 
+> **适用范围**：实测基于 Windows 10/11 x64、服务版本 `1.0.70.3194` 一带的机器；不同版本的安装路径、驱动文件名与回滚行为可能不同，动手前先用第二节只读命令核对**你自己的现状**，不要照抄路径。
+> **目录**：② 只读检查 → ③ 三条复发路径 → ④ 清理步骤（A–F + 备选） → ⑤ 验证清单 → ⑥ 防复发（IFEO） → ⑦ 还原 → ⑧ FAQ → ⑨ 为什么没有一键工具。
+
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-0078D4.svg)](https://creativecommons.org/licenses/by/4.0/)
 
 for non-Chinese users: [English summary](#english-summary) · Principles & evidence: [alibabaprotect-forensics](https://github.com/deserthouse/alibabaprotect-forensics)
@@ -19,7 +22,7 @@ for non-Chinese users: [English summary](#english-summary) · Principles & evide
 - 你在任务管理器里看到的 `AlibabaProtect.exe`，是阿里系软件（淘宝 / 旺旺 / 优酷 / UC / 1688 等）安装时**附带装入**的后台服务（技术身份见第一节），不是病毒。
 - **卸载那些阿里系软件后，它不会跟着卸载**，仍在后台常驻并消耗 CPU。
 - 不依赖任何阿里系软件的功能，就可以安全删除；下面每一步都给出**预期输出**，照着核对即可。反之，如果你正在使用依赖它的功能、或还不确定是否需要它——**不要删**，先看第二节。
-- 看不懂命令行？把这份指南的链接交给你的 AI 助手，让它按文档逐步讲解或代你执行——每一步都有预期输出，照单核对即可。
+- 看不懂命令行？把这份指南的链接交给你的 AI 助手，让它**按文档逐步讲解、并帮你核对每一步的实际输出与预期是否一致**；修改系统的命令仍**由你本人在你的设备上执行**（边界见第九节）。
 
 > 本指南描述的是**在你自己的设备上**、由**你本人以管理员权限**执行的清理步骤。请先读完一遍再动手。
 
@@ -150,11 +153,14 @@ Remove-Item 'C:\ProgramData\Alibaba\AlibabaProtectDT' -Recurse -Force
 
 ### 备选路径：如果某一步报“拒绝访问”
 
-说明自我保护机制仍在起作用（进程还活着）。改用**两阶段**方式：
+说明自我保护机制仍在起作用（进程还活着）。可尝试**两阶段**方式，但**必须先满足下面的适用条件**：
 
-1. **阶段 1（服务还在运行时）**：只做 `sc.exe config AlibabaProtect start= disabled`，然后重启
-2. **重启**（此时它不会被拉起来，进程与文件占用都消失）
-3. **阶段 2**：重启后执行上面的阶段 B–E（此时通常不会再受阻）
+> **适用条件（必查）**：第三节的实测观察到「`Start` 改 `Disabled` 后几秒被回滚为 `Auto`」。是否回滚**因机器与版本而异**——本备选路径只在**禁用后实际读回、且等待约 30 秒再读一次仍保持 `DISABLED`** 时成立。若读回变回 `AUTO_START`，说明你命中了回滚场景：**改配置这条路对你不适用**，请回到主路径（先完成阶段 A/C，重启后再试阶段 B/D/E），完成与否一律以第五节验证清单为准。
+
+1. **阶段 1（服务还在运行时）**：只做 `sc.exe config AlibabaProtect start= disabled`
+2. **读回确认**：`sc.exe qc AlibabaProtect` 的 `START_TYPE` 应为 `4   DISABLED`；等待约 30 秒后再读一次，仍是 `DISABLED` 才继续（第三节的回滚在几秒内发生）
+3. **重启**；重启后用 `sc.exe query AlibabaProtect` 确认服务状态为 `STOPPED`（或已报 1060）——**以读回结果为准，不因"做过禁用"而默认已停用**
+4. **阶段 2**：确认未加载后执行上面的阶段 B–E（此时通常不会再受阻），完成后仍按第五节清单逐项验证
 
 ---
 
@@ -177,11 +183,16 @@ Remove-Item 'C:\ProgramData\Alibaba\AlibabaProtectDT' -Recurse -Force
 >
 > 想确认它是否在工作，用**功能验证**而不是看注册表：见 [取证仓的执行级取证章节](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/05-execution-forensics.md)。
 
-**自动化核验**：不想逐条敲命令的话，取证仓提供了只读的核验脚本（含上述 1–5 项，并额外检查驱动与残留目录）：
+**自动化核验**：不想逐条敲命令的话，取证仓提供了只读的核验脚本（含上述 1–5 项，并额外检查驱动与残留目录）。本仓不附带该脚本，从取证仓**固定版本**获取：
 
 ```bash
+# 获取（固定在取证仓提交 2678b62，与本指南引用的取证内容一致）：
+curl -L -o verify_clean.py https://github.com/deserthouse/alibabaprotect-forensics/raw/2678b624ef95442cc973ec1d014370af2665b803/scripts/verify_clean.py
+# 只读运行（不含任何写入/删除动作）：
 python verify_clean.py
 ```
+
+> 只从上述取证仓地址获取；同名的来历不明脚本可能含有本文未审查的动作。
 
 ---
 
@@ -199,7 +210,7 @@ python verify_clean.py
 | 怎么**证明**拦截真的生效（探针实验 / Prefetch 指纹） | [docs/05-execution-forensics.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/05-execution-forensics.md) |
 | 为什么删了还会回来（三条重新出现路径） | [docs/04-why-hard-to-remove.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/04-why-hard-to-remove.md) |
 
-**一键执行**（脚本在取证仓 [`scripts/`](https://github.com/deserthouse/alibabaprotect-forensics/tree/main/scripts)，下载到本地后运行；可逆）：
+**一键执行**（脚本固定版本：取证仓 [`scripts/` @ 2678b62](https://github.com/deserthouse/alibabaprotect-forensics/tree/2678b624ef95442cc973ec1d014370af2665b803/scripts)，下载到本地后运行；`--status`/`--probe` 只读，`--apply`/`--remove` 修改注册表、可逆，四种模式均不含删除动作）：
 
 ```bash
 python ifeo_block.py --status     # 查看状态（只读）
@@ -295,7 +306,7 @@ A hands-on guide to removing **AlibabaProtect (`Alibaba PC Safe Service`)** from
 
 > Note on scheduled task names: the task is literally named `AliProctectUpdate` (the vendor's own typo), while the *process* is `AliProtectUpdate.exe`. Don't "fix" the spelling or the command will miss.
 
-If the command line is unfamiliar, hand this guide's link to your AI assistant and have it walk you through — or execute for you; every step carries expected output to verify against.
+If the command line is unfamiliar, hand this guide's link to your AI assistant and have it walk you through each step and check the actual output against the expected one; system-modifying commands are still executed by you, on your own device (boundaries in the "why no one-click tool" section).
 
 This document is **documentation only** — no binaries, no releases.
 
