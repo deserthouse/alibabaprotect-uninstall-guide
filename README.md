@@ -284,7 +284,7 @@ A：执行第五节的五项验证清单。五项全部符合即为完成。
 
 ## License
 
-本文档以 **[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)** 发布。本指南为纯文档，不包含任何厂商软件的二进制或本体资源；文中引用的日志/报错原文仅为说明所需的少量引用，全文为作者原创内容。
+本文档以 **[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)** 发布（© 2026 deserthouse，许可全文见 [LICENSE](LICENSE)）。本指南为纯文档，不包含任何厂商软件的二进制或本体资源；文中引用的日志/报错原文仅为说明所需的少量引用，全文为作者原创内容。
 
 ---
 
