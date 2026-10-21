@@ -19,9 +19,9 @@ for non-Chinese users: [English summary](#english-summary) · Principles & evide
 
 ## 小白指南
 
-- 你在任务管理器里看到的 `AlibabaProtect.exe`，是阿里系软件（淘宝 / 旺旺 / 优酷 / UC / 1688 等）安装时**附带装入**的后台服务（技术身份见第一节），不是病毒。
+- 你在任务管理器里看到的 `AlibabaProtect.exe`，是阿里系软件（淘宝 / 旺旺 / 优酷 / UC / 1688 等）安装时**附带装入**的后台服务（技术身份见第一节）。本指南基于本机样本的签名与路径核对了组件身份，**不作全面的恶意性判定**（同名文件不代表同一文件）。
 - **卸载那些阿里系软件后，它不会跟着卸载**，仍在后台常驻并消耗 CPU。
-- 不依赖任何阿里系软件的功能，就可以安全删除；下面每一步都给出**预期输出**，照着核对即可。反之，如果你正在使用依赖它的功能、或还不确定是否需要它——**不要删**，先看第二节。
+- 就本指南采样的版本而言，未见阿里系主功能依赖该组件；是否删除请**按你实际安装的产品确认**（未逐一验证上列全部产品的安装/卸载行为）。确认不需要后即可清理，下面每一步都给出**预期输出**，照着核对即可。反之，如果你正在使用可能依赖它的功能、或还不确定——**不要删**，先看第二节。
 - 看不懂命令行？把这份指南的链接交给你的 AI 助手，让它**按文档逐步讲解、并帮你核对每一步的实际输出与预期是否一致**；修改系统的命令仍**由你本人在你的设备上执行**（边界见第九节）。
 
 > 本指南描述的是**在你自己的设备上**、由**你本人以管理员权限**执行的清理步骤。请先读完一遍再动手。
@@ -173,10 +173,10 @@ Remove-Item 'C:\ProgramData\Alibaba\AlibabaProtectDT' -Recurse -Force
 | # | 检查 | 预期结果 |
 |---|---|---|
 | 1 | `sc.exe query AlibabaProtect` | **错误 1060**（服务未安装） |
-| 2 | `tasklist /FI "IMAGENAME eq AlibabaProtect.exe"` | 无输出 |
+| 2 | `tasklist /FI "IMAGENAME eq AlibabaProtect.exe"` | 无匹配进程记录（无匹配时 tasklist 输出一行提示文本而非空输出；显示语言随系统语言） |
 | 3 | `Test-Path 'C:\Program Files (x86)\AlibabaProtect'` | `False` |
 | 4 | `reg query "HKLM\SYSTEM\CurrentControlSet\Services\AlibabaProtect"` | 找不到项 |
-| 5 | `Get-ScheduledTask \| Where-Object { $_.TaskName -match 'Ali' }` | 无 AlibabaProtect 相关条目 |
+| 5 | `Get-ScheduledTask \| Where-Object { $_.TaskName -match 'Ali' }` | 相关任务不存在，或存在但状态为 **Disabled**（禁用的任务仍会列出——属预期，别为"清零"去删它） |
 | 6 | `reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\AlibabaProtect.exe" /v Debugger` | **若你做了第六节的防复发设置，这里（应当有）条目** —— 见下方说明 |
 
 五项（1–5）全部符合 = 清理完成。
@@ -188,8 +188,8 @@ Remove-Item 'C:\ProgramData\Alibaba\AlibabaProtectDT' -Recurse -Force
 **自动化核验**：不想逐条敲命令的话，取证仓提供了只读的核验脚本（含上述 1–5 项，并额外检查驱动与残留目录）。本仓不附带该脚本，从取证仓**固定版本**获取：
 
 ```bash
-# 获取（固定在取证仓提交 2678b62，与本指南引用的取证内容一致）：
-curl -L -o verify_clean.py https://github.com/deserthouse/alibabaprotect-forensics/raw/2678b624ef95442cc973ec1d014370af2665b803/scripts/verify_clean.py
+# 获取（固定在取证仓提交 49b9d26——含 2026-10-21 核验脚本修复：查询失败不再被当作"不存在"）：
+curl -L -o verify_clean.py https://github.com/deserthouse/alibabaprotect-forensics/raw/49b9d26a473044b463563e4eb7b7468cc0826538/scripts/verify_clean.py
 # 只读运行（不含任何写入/删除动作）：
 python verify_clean.py
 ```
@@ -212,7 +212,7 @@ python verify_clean.py
 | 怎么**证明**拦截真的生效（探针实验 / Prefetch 指纹） | [docs/05-execution-forensics.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/05-execution-forensics.md) |
 | 为什么删了还会回来（三条重新出现路径） | [docs/04-why-hard-to-remove.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/04-why-hard-to-remove.md) |
 
-**一键执行**（脚本固定版本：取证仓 [`scripts/` @ 2678b62](https://github.com/deserthouse/alibabaprotect-forensics/tree/2678b624ef95442cc973ec1d014370af2665b803/scripts)，下载到本地后运行。各模式行为：`--status` 只读；`--apply`/`--remove` **写注册表**（可逆；异常中断时可能残留需手工清理的 IFEO 键）；`--probe` **需要管理员**，做一次性实验——创建临时目录、复制并执行系统 `hostname.exe`、临时写入并随后删除 IFEO 键。所有模式**不删除任何客户端安装文件**；probe 只清理自建的临时目录与探针键）：
+**一键执行**（脚本固定版本：取证仓 [`scripts/` @ 49b9d26](https://github.com/deserthouse/alibabaprotect-forensics/tree/49b9d26a473044b463563e4eb7b7468cc0826538/scripts)，下载到本地后运行。**还原边界**：`--remove` 依赖建立拦截时自动保存的原态备份——修复后的脚本先备份后写入、重试不覆盖原态，备份损坏/缺失时拒绝自动删除并转人工路径；2026-10-21 版经 29 项隔离测试，Windows 真实环境的完整回归未在本轮执行。各模式行为：`--status` 只读；`--apply`/`--remove` **写注册表**；`--probe` **需要管理员**，做一次性实验——创建临时目录、复制并执行系统 `hostname.exe`、临时写入并随后删除 IFEO 键。所有模式**不删除任何客户端安装文件**；probe 只清理自建的临时目录与探针键）：
 
 ```bash
 python ifeo_block.py --status     # 查看状态（只读）
@@ -246,7 +246,7 @@ A：删除标记需要重启后才完全生效。重启即可。
 A：进程仍在运行（自我保护）。先确认 `AlibabaProtect.exe` 已结束；若仍不行，用第四节末尾的“备选路径”。
 
 **Q：写注册表报 `拒绝访问`，但我明明是管理员？**
-A：这**通常不是权限问题，而是安全软件（HIPS）的"注册表防护"**在拦截 —— 它专门拦 `Image File Execution Options` 的**新建子键**（IFEO 是常见的持久化手法，保护它是合理的）。
+A：**不一定是权限问题**：可能是安全软件（HIPS）的"注册表防护"在拦 `Image File Execution Options` 的**新建子键**（IFEO 是常见持久化手法，保护它是合理的），也可能是该键的 ACL 或组策略限制。定位顺序：先查安全软件的拦截日志，再核对该键的 ACL，最后才考虑其它原因。
 
 快速确认：**普通 HKLM 键能写、IFEO 子键不能写** 即可锁定是它。
 
