@@ -30,7 +30,9 @@ for non-Chinese users: [English summary](#english-summary) · Principles & evide
 
 ## 一、AlibabaProtect 是什么
 
-**AlibabaProtect 是阿里系软件安装时装进系统的常驻后台服务，配有一个自我保护的内核驱动；那些软件卸载后它不随之卸载，而“结束进程、禁用服务、删除文件”这些常规操作都会被回滚或自动恢复——所以必须按第四节的特定顺序清理。**具体身份与机制见下表。
+**AlibabaProtect 是阿里系软件安装时装进系统的常驻后台服务**，配有自我保护的内核驱动；那些软件卸载后它不随之卸载，而"结束进程、禁用服务、删除文件"这些常规操作都会被回滚或自动恢复——所以必须按第四节的特定顺序清理。
+
+具体身份与机制见下表。
 
 | 项目 | 值 |
 |---|---|
@@ -210,12 +212,12 @@ python verify_clean.py
 | 怎么**证明**拦截真的生效（探针实验 / Prefetch 指纹） | [docs/05-execution-forensics.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/05-execution-forensics.md) |
 | 为什么删了还会回来（三条重新出现路径） | [docs/04-why-hard-to-remove.md](https://github.com/deserthouse/alibabaprotect-forensics/blob/main/docs/04-why-hard-to-remove.md) |
 
-**一键执行**（脚本固定版本：取证仓 [`scripts/` @ 2678b62](https://github.com/deserthouse/alibabaprotect-forensics/tree/2678b624ef95442cc973ec1d014370af2665b803/scripts)，下载到本地后运行；`--status`/`--probe` 只读，`--apply`/`--remove` 修改注册表、可逆，四种模式均不含删除动作）：
+**一键执行**（脚本固定版本：取证仓 [`scripts/` @ 2678b62](https://github.com/deserthouse/alibabaprotect-forensics/tree/2678b624ef95442cc973ec1d014370af2665b803/scripts)，下载到本地后运行。各模式行为：`--status` 只读；`--apply`/`--remove` **写注册表**（可逆；异常中断时可能残留需手工清理的 IFEO 键）；`--probe` **需要管理员**，做一次性实验——创建临时目录、复制并执行系统 `hostname.exe`、临时写入并随后删除 IFEO 键。所有模式**不删除任何客户端安装文件**；probe 只清理自建的临时目录与探针键）：
 
 ```bash
 python ifeo_block.py --status     # 查看状态（只读）
 python ifeo_block.py --apply      # 建立 4 条拦截（需要管理员）
-python ifeo_block.py --probe      # 功能性验证：真的拦住了吗
+python ifeo_block.py --probe      # 功能性验证：真的拦住了吗（需管理员，含临时写删动作，见上）
 python ifeo_block.py --remove     # 一键还原
 ```
 
