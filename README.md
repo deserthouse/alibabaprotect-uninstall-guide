@@ -3,7 +3,7 @@
 > 在 Windows 上检查和移除 AlibabaProtect 的分步指南。先核对本机版本与功能依赖；指南区分只读检查和系统修改，并说明验证及恢复边界。
 
 > **适用范围**：实测基于 Windows 10/11 x64、服务版本 `1.0.70.3194` 一带的机器；不同版本的安装路径、驱动文件名与回滚行为可能不同，动手前先用第二节只读命令核对**你自己的现状**，不要照抄路径。
-> **目录**：[② 只读检查](#二先做只读检查不改动任何东西) → [③ 三条复发路径](#三条已知的重新出现路径) → [④ 清理步骤](#四清理步骤) → [⑤ 验证清单](#五验证清单) → [⑥ 防复发（IFEO）](#六防复发) → [⑦ 还原](#七如何还原) → [⑧ FAQ](#八常见问题faq) → [⑨ 为什么没有一键工具](#九为什么不提供一键清理工具)。**只想动手的读者：直接走 [④ 清理](#四清理步骤)，完成后用 [⑤ 清单](#五验证清单) 核对。**
+> **目录**：[② 只读检查](#二先做只读检查不改动任何东西) → [③ 三条复发路径](#三三条已知的重新出现路径) → [④ 清理步骤](#四清理步骤) → [⑤ 验证清单](#五验证清单) → [⑥ 防复发（IFEO）](#六防复发) → [⑦ 还原](#七如何还原) → [⑧ FAQ](#八常见问题faq) → [⑨ 为什么没有一键工具](#九为什么不提供一键清理工具)。**只想动手的读者：直接走 [④ 清理](#四清理步骤)，完成后用 [⑤ 清单](#五验证清单) 核对。**
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-0078D4.svg)](https://creativecommons.org/licenses/by/4.0/)
 
@@ -11,7 +11,7 @@ for non-Chinese users: [English summary](#english-summary) · Principles & evide
 
 > **声明**
 >
-> 本指南不含任何人类成分，详见 [AI 使用声明](#ai-使用声明--ai-usage-statement)；
+> 本项目不含任何人类成分。详见 [AI 使用声明](#ai-使用声明--ai-usage-statement)；
 >
 > 本指南为独立技术分析，与阿里巴巴无关联，不提供一键清理工具（不可逆操作以文档承载、由人执行），详见 [免责声明](#免责声明)。
 
@@ -281,7 +281,7 @@ A：执行第五节的五项验证清单。五项全部符合即为完成。
 
 ## AI 使用声明 / AI Usage Statement
 
-- **中文**：本指南的调研、取证与撰写**深度参与使用了 AI 工具**（命令整理与文本组织）。全部**清理决策与最终验收由人类作者作出**；所有命令与结论均在作者本人设备上实测通过后发布。
+- **中文**：本项目不含任何人类成分。本指南的调研、取证与撰写**深度参与使用了 AI 工具**（命令整理与文本组织）。全部**清理决策与最终验收由人类作者作出**；所有命令与结论均在作者本人设备上实测通过后发布。
 - **English**: AI tools were **substantially involved** in drafting this guide (command organization and text). All **cleanup decisions and final acceptance were made by the human author**; every command and conclusion was verified on the author's own machine before publication.
 
 ## License
