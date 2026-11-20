@@ -3,17 +3,14 @@
 > 在 Windows 上检查和移除 AlibabaProtect 的分步指南。先核对本机版本与功能依赖；指南区分只读检查和系统修改，并说明验证及恢复边界。
 
 > **适用范围**：实测基于 Windows 10/11 x64、服务版本 `1.0.70.3194` 一带的机器；不同版本的安装路径、驱动文件名与回滚行为可能不同，动手前先用第二节只读命令核对**你自己的现状**，不要照抄路径。
-> **目录**：[② 只读检查](#二先做只读检查不改动任何东西) → [③ 三条复发路径](#三三条已知的重新出现路径) → [④ 清理步骤](#四清理步骤) → [⑤ 验证清单](#五验证清单) → [⑥ 防复发（IFEO）](#六防复发) → [⑦ 还原](#七如何还原) → [⑧ FAQ](#八常见问题faq) → [⑨ 为什么没有一键工具](#九为什么不提供一键清理工具)。**只想动手的读者：直接走 [④ 清理](#四清理步骤)，完成后用 [⑤ 清单](#五验证清单) 核对。**
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-0078D4.svg)](https://creativecommons.org/licenses/by/4.0/)
 
-for non-Chinese users: [English summary](#english-summary) · Principles & evidence: [alibabaprotect-forensics](https://github.com/deserthouse/alibabaprotect-forensics)
+[English summary](#english-summary) · [配套取证记录](https://github.com/deserthouse/alibabaprotect-forensics)
 
-> **声明**
->
-> 本项目不含任何人类成分。详见 [AI 使用声明](#ai-使用声明--ai-usage-statement)；
->
-> 本指南为独立技术分析，与阿里巴巴无关联，不提供一键清理工具（不可逆操作以文档承载、由人执行），详见 [免责声明](#免责声明)。
+[只读检查](#二先做只读检查不改动任何东西) · [验证清单](#五验证清单) · [常见问题](#八常见问题faq)
+
+本指南为独立技术分析，与阿里巴巴无关联。[免责声明](#免责声明)。
 
 ---
 
@@ -279,10 +276,13 @@ A：执行第五节的五项验证清单。五项全部符合即为完成。
 - 请勿将本文用于他人设备或任何未经授权的场景。
 - 文中命令基于作者在实机上的验证记录整理；不同版本的文件路径/版本号可能不同，执行前请先用第二节的只读命令核对你自己的实际情况。
 
-## AI 使用声明 / AI Usage Statement
+<a name="ai-使用声明--ai-usage-statement"></a>
 
-- **中文**：本项目不含任何人类成分。本指南的调研、取证与撰写**深度参与使用了 AI 工具**（命令整理与文本组织）。全部**清理决策与最终验收由人类作者作出**；所有命令与结论均在作者本人设备上实测通过后发布。
-- **English**: AI tools were **substantially involved** in drafting this guide (command organization and text). All **cleanup decisions and final acceptance were made by the human author**; every command and conclusion was verified on the author's own machine before publication.
+## AI 使用声明
+
+本项目不含任何人类成分。AI 协助整理调研、取证命令和文稿。维护者在自己的设备上核验，负责清理决策、审订与验收。
+
+This project contains no human ingredients. AI assisted with research, command organization and drafting. The maintainer verified the material on their own equipment and made cleanup and publication decisions.
 
 ## License
 
@@ -294,7 +294,7 @@ A：执行第五节的五项验证清单。五项全部符合即为完成。
 
 > **Statements**
 >
-> This guide contains no human ingredients — see the [AI usage statement](#ai-使用声明--ai-usage-statement).
+> [AI disclosure](#ai-使用声明)
 >
 > This is an independent technical analysis, not affiliated with Alibaba; no one-click cleanup tool is provided (irreversible operations are carried by documentation and executed by a human) — see the [Disclaimer](#免责声明).
 
